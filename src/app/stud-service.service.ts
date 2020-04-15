@@ -3,73 +3,39 @@ import { HttpClient,HttpHeaders, HttpErrorResponse } from '@angular/common/http'
 import { stud } from './Shared/stud';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-
+import { AngularFireDatabase, AngularFireList } from '@angular/fire/database';
+//import { Customer } from './customer';
   
 @Injectable({
   providedIn: 'root'
 })
 export class StudServiceService {
 
-  public url: string = "https://bnode123.herokuapp.com/addstud";
-  public one: string = "https://bnode123.herokuapp.com/getuser";
-  public two: string = "https://bnode123.herokuapp.com";
+  private dbPath = '/customers';
 
-  headers = new HttpHeaders().set('Content-Type', 'application/json');
+  customersRef: AngularFireList<stud> = null;
 
-  constructor(private _http: HttpClient) { }
-
-  savestud(stude: stud) {
-    return this._http.post<any>(this.url, stude);
+  constructor(private db: AngularFireDatabase) {
+    this.customersRef = db.list(this.dbPath);
   }
 
-  GetUser(){
-    return this._http.get(this.one);
+  createCustomer(customer: stud): void {
+    this.customersRef.push(customer);
   }
 
-
-  getEmployee(id): Observable<any> {
-    let url2 = `${this.two}/read/${id}`;
-    return this._http.get(url2, {headers: this.headers}).pipe(
-      map((res: Response) => {
-        return res || {}
-      }),
-      catchError(this.errorMgmt)
-
-    )
-  }
-    
-   // Update employee
-   updateEmployee(id, data): Observable<any> {
-    let url3 = `${this.two}/update/${id}`;
-    return this._http.put<any>(url3, data, { headers: this.headers }).pipe(
-      catchError(this.errorMgmt) 
-    )
+  updateCustomer(key: string, value: any): Promise<void> {
+    return this.customersRef.update(key, value);
   }
 
- // Delete employee
- deleteEmployee(id): Observable<any> {
-  let url = `${this.two}/delete/${id}`;
-  return this._http.delete(url, { headers: this.headers }).pipe(
-    catchError(this.errorMgmt)
-  )
+  deleteCustomer(key: string): Promise<void> {
+    return this.customersRef.remove(key);
+  }
+
+  getCustomersList(): AngularFireList<stud> {
+    return this.customersRef;
+  }
+
+  deleteAll(): Promise<void> {
+    return this.customersRef.remove();
+  }
 }
-
-
-  // Error handling 
-  errorMgmt(error: HttpErrorResponse) {
-    let errorMessage = '';
-    if (error.error instanceof ErrorEvent) {
-      // Get client-side error
-      errorMessage = error.error.message;
-    } else {
-      // Get server-side error
-      errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
-    }
-    console.log(errorMessage);
-    return throwError(errorMessage);
-  }
-  
-
-  
-}
-

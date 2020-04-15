@@ -1,4 +1,4 @@
-export class stud{
+export class Stud{
   key:string;
   Enrollmentno: string;
   Name : string;

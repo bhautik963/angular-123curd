@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import{stud} from '../shared/stud';
+import{Stud} from '../shared/stud';
 import { StudServiceService } from './../stud-service.service';
 import {  Router  } from '@angular/router';  
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
@@ -11,7 +11,7 @@ import { HttpClient } from '@angular/common/http';
 })
 export class ContectComponent implements OnInit {
   
-  customer: stud = new stud();
+  customer: Stud = new Stud();
   submitted = false;
 
   constructor(private studservice: StudServiceService,private router: Router,private http: HttpClient) { }
@@ -21,12 +21,12 @@ export class ContectComponent implements OnInit {
 
   newCustomer(): void {
     this.submitted = false;
-    this.customer = new stud();
+    this.customer = new Stud();
   }
 
   save() {
     this.studservice.createCustomer(this.customer);
-    this.customer = new stud();
+    this.customer = new Stud();
   }
 
   onSubmit() {
